@@ -1,0 +1,176 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.chart-container {
+  text-align: center;
+}
+
+.container {
+  /* margin-top: 10px;
+  margin-left: 10px;
+  margin-right: 10px; */
+  display: flex;
+  position: relative;
+  padding-top: 50px;
+}
+
+.header {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  background-color: #4caf50;
+  color: white;
+  text-align: center;
+  /* padding: 20px; */
+  font-size: 32px;
+  z-index: 1;
+}
+.headerAdmin {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  background-color: #4b5465;
+  color: white;
+  text-align: center;
+  /* padding: 20px; */
+  font-size: 32px;
+  z-index: 1;
+}
+.headerAdmin a {
+  all: unset;
+  cursor: pointer;
+}
+.purchaseComplete {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  background-color: #adaf4c;
+  color: white;
+  text-align: center;
+  /* padding: 20px; */
+  font-size: 32px;
+  z-index: 1;
+}
+
+.purchaseError {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  background-color: red;
+  color: white;
+  text-align: center;
+  /* padding: 20px; */
+  font-size: 32px;
+  z-index: 1;
+}
+
+.products {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+.product {
+  width: 30%;
+  text-align: center;
+  border: 1px solid black;
+  margin-bottom: 20px;
+}
+
+.product img {
+  width: 100%;
+  height: 300px;
+}
+
+.shopping-cart {
+  width: 30%;
+  margin-left: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+td,
+th {
+  border: 1px solid black;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+
+.buttonGroup {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+button {
+  background-color: #4caf50;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+.custom-tooltip {
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.custom-tooltip .label {
+  font-weight: 700;
+}
+
+.custom-tooltip .intro {
+  font-weight: 600;
+}
