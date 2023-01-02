@@ -19,6 +19,7 @@ app.post(`/addProduct`, async (req, res) => {
       prisma.product.create({
         data: {
           name: product.name,
+          category: product.category,
           totalCount: product.totalCount,
         },
       })
@@ -80,6 +81,47 @@ app.get("/product/:name", async (req, res) => {
   res.json(product);
 });
 
+app.get("/productCategories", async (req, res) => {
+  const product = await prisma.product.groupBy({
+    by: ["category"],
+    where: {
+      AND: [
+        {
+          purchasedAt: {
+            gt: new Date(Date.now() - 60 * 1000),
+          },
+        }
+      ]
+    },
+    _sum: {
+      totalCount: true,
+    },
+  });
+  res.json(product);
+});
+
+app.get("/productCategory/:category", async (req, res) => {
+  const product = await prisma.product.groupBy({
+    by: ["category"],
+    where: {
+      AND: [
+        {
+          purchasedAt: {
+            gt: new Date(Date.now() - 60 * 1000),
+          },
+        },
+        {
+          category: req.params.category,
+        }
+      ]
+    },
+    _sum: {
+      totalCount: true,
+    },
+  });
+  res.json(product);
+});
+
 // app.get("/totalSales", async (req, res) => {
 //   const totalSales = await prisma.product.reduce({
 //     select: {
@@ -120,33 +162,7 @@ app.get("/product/:name", async (req, res) => {
 //   res.json(post)
 // })
 
-// app.get('/feed', async (req, res) => {
-//   const { searchString, skip, take, orderBy } = req.query
 
-//   const or = searchString
-//     ? {
-//         OR: [
-//           { title: { contains: searchString } },
-//           { content: { contains: searchString } },
-//         ],
-//       }
-//     : {}
-
-//   const posts = await prisma.post.findMany({
-//     where: {
-//       published: true,
-//       ...or,
-//     },
-//     include: { author: true },
-//     take: Number(take) || undefined,
-//     skip: Number(skip) || undefined,
-//     orderBy: {
-//       updatedAt: orderBy || undefined,
-//     },
-//   })
-
-//   res.json(posts)
-// })
 
 const server = app.listen(3001, () =>
   console.log("🚀 Server ready at: http://localhost:3001")

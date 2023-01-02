@@ -1,29 +1,42 @@
 // import logo from './logo.svg';
+import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ShoppingCart } from "./components/ShoppingCart";
 import { AllProductsBarChart } from "./components/AllProductsBarChart";
 import { FilterProductsBarChart } from "./components/FilterProductsBarChart";
 import "./App.css";
+import { Input } from "./components/input";
 function App() {
-  // AllProductsBarChart
-  // const products = [
-  //   {
-  //     id: 1,
-  //     name: "Iphone 14,Mac Pro",
-  //     totalCount: 100,
-  //     date: "12:02",
-  //   },
-  // ];
+  const [inputValue, setInputValue] = useState("inital-option");
+  const [filteredResponseTotalSalesData, setFilteredResponseTotalSalesData] =
+    useState([]);
+  const [allCat, setAllCat] = useState([]);
 
-  // filterBarChart only retrun 1 array database query
-  // const products = [
-  //   {
-  //     id: 1,
-  //     name: "Iphone 14",
-  //     totalCount: 100,
-  //     date: "12:02",
-  //   },
-  // ];
+  useEffect(() => {
+    if (inputValue !== "inital-option") {
+      fetch(`http://localhost:3001/productCategory/${inputValue}`)
+        .then((res) => res.json())
+        .then((data) => {
+          let productData = {};
+          const totalCount = data[0]["_sum"].totalCount;
+          const category = data[0].category;
+          if (!totalCount) {
+            productData.totalCount = 0;
+            productData.category = category;
+            productData.date = "60 Seconds";
+          } else {
+            productData.totalCount = totalCount;
+            productData.category = category;
+            productData.date = "60 Seconds";
+          }
+          setFilteredResponseTotalSalesData([productData]);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+  }, [inputValue]);
+
   return (
     <div className="App">
       <Router>
@@ -40,15 +53,19 @@ function App() {
                 <h4>All product with in 60 sec</h4>
 
                 <AllProductsBarChart />
-                <h4>Filter by product with in 60 sec</h4>
+                <h4>Filter by category with in 60 sec</h4>
+                <Input
+                  setAllCat={setAllCat}
+                  setInputValue={setInputValue}
+                ></Input>
 
-                <select>
-                  <option value="inital-option">--Select Product---</option>
-                  <option value="apple">Apple</option>
-                  <option value="macPro">Mac Pro</option>
-                </select>
-
-                <FilterProductsBarChart />
+                <FilterProductsBarChart
+                  filteredResponseTotalSalesData={
+                    filteredResponseTotalSalesData
+                  }
+                  inputValue={inputValue}
+                  allCat={allCat}
+                />
               </div>
             }
           />

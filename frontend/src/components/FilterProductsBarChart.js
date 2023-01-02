@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   BarChart,
   Bar,
@@ -10,37 +10,66 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const products = [
-  {
-    id: 1,
-    name: "Iphone 14,Mac Pro",
-    totalCount: 100,
-    date: "12:02",
-  },
-];
+// const products = [
+//   {
+//     id: 1,
+//     name: "Iphone 14,Mac Pro",
+//     totalCount: 100,
+//     date: "12:02",
+//   },
+// ];
 
-export const FilterProductsBarChart = () => {
-  const data = products.map((product) => ({
-    productName: product.name,
-    totalCount: product.totalCount,
-    date: product.date,
-  }));
+export const FilterProductsBarChart = (props) => {
+  const [responseTotalSalesData, setResponseTotalSalesData] = useState();
 
-  //   const getProductName = (data, index) => {
-  //     // Find the product object with the matching id
-  //     const product = products.find((product) => product.id === data.id);
-  //     // Return the product name
-  //     return product.name;
-  //   };
+  useEffect(() => {
+    if (props.inputValue !== "inital-option") {
+      setResponseTotalSalesData(props.filteredResponseTotalSalesData);
+    }
+  }, [props.filteredResponseTotalSalesData, props.inputValue]);
+
+  useEffect(() => {
+    if (props.inputValue === "inital-option" && props.allCat.length > 0) {
+      fetch("http://localhost:3001/totalSales")
+        .then((res) => res.json())
+        .then((data) => {
+          let productData = {};
+          const totalCount = data.totalSales["_sum"].totalCount;
+          if (!totalCount) {
+            productData.totalCount = 0;
+            productData.category =
+              props.allCat.length < 3
+                ? props.allCat.join(",")
+                : props.allCat.slice(0, 2) + " ...";
+            productData.date = "60 Seconds";
+          } else {
+            productData.totalCount = totalCount;
+            productData.category =
+              props.allCat.length < 3
+                ? props.allCat.join(",")
+                : props.allCat.slice(0, 2) + " ...";
+            productData.date = "60 Seconds";
+          }
+          setResponseTotalSalesData([productData]);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+  }, [props.allCat, props.inputValue]);
+
+  // const data = products.map((product) => ({
+  //   productName: product.name,
+  //   totalCount: product.totalCount,
+  //   date: product.date,
+  // }));
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active) {
-      console.log("payload[0]", payload[0]);
       return (
         <div className="custom-tooltip">
-          {/* <p className="label">{getProductName(payload[0].payload, label)}</p> */}
           <p className="intro">
-            Product Names: {payload[0].payload.productName}
+            Product Categories: {payload[0].payload.category}
           </p>
           <p className="intro">Total Count: {payload[0].payload.totalCount}</p>
         </div>
@@ -50,10 +79,12 @@ export const FilterProductsBarChart = () => {
     return null;
   };
 
+  if (!responseTotalSalesData) return <h1>...Loading</h1>;
+
   return (
     <ResponsiveContainer width="50%" height={300}>
       <BarChart
-        data={data}
+        data={responseTotalSalesData}
         margin={{
           top: 5,
           right: 30,
@@ -66,7 +97,7 @@ export const FilterProductsBarChart = () => {
         <YAxis />
         <Tooltip content={<CustomTooltip />} />
         <Legend />
-        <Bar dataKey="totalCount" fill="#8884d8" />
+        <Bar dataKey="totalCount" fill="#8884d8" barSize={30} />
       </BarChart>
     </ResponsiveContainer>
   );
