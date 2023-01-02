@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { of } from "rxjs";
+import { ajax } from "rxjs/ajax";
+import { map, catchError } from "rxjs/operators";
 
 export function ShoppingCart() {
   // Declare state variables for the products in the cart and the quantity and price of each product
@@ -70,32 +73,81 @@ export function ShoppingCart() {
           totalCount: value,
         });
       }
-      fetch("http://localhost:3001/addProduct", {
+      // HTTP POST request to the server
+      const purchaseObservable$ = ajax({
+        url: "http://localhost:3001/addProduct",
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(postData),
-      })
-        .then((res) => res.json())
-        .then((data) => {
+      }).pipe(
+        map((res) => res.response),
+        catchError((error) => of(error))
+      );
+
+      const subscription = purchaseObservable$.subscribe(
+        (data) => {
           setIsPurchased(true);
           clearState();
           setTimeout(() => {
             setIsPurchased(false);
           }, 5000);
-          // setResponse(data);
-        })
-        .catch((error) => {
+        },
+        (error) => {
           setIsErrorPurchased(true);
           setErrorMessage(error.message);
           setTimeout(() => {
             setIsErrorPurchased(false);
           }, 5000);
-          console.error(error);
-        });
+        }
+      );
+
+      // To unsubscribe, we can call the unsubscribe method on the subscription object
+      return () => subscription.unsubscribe();
     }
   };
+
+  // Function to handle the purchase button click
+  // const handlePurchase = () => {
+  //   if (Object.keys(quantity).length > 0) {
+  //     let postData = [];
+  //     for (const [key, value] of Object.entries(quantity)) {
+  //       const productCategory = products.find(
+  //         (product) => product.name === key
+  //       ).type;
+  //       postData.push({
+  //         name: key,
+  //         category: productCategory,
+  //         totalCount: value,
+  //       });
+  //     }
+  //     fetch("http://localhost:3001/addProduct", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(postData),
+  //     })
+  //       .then((res) => res.json())
+  //       .then((data) => {
+  //         setIsPurchased(true);
+  //         clearState();
+  //         setTimeout(() => {
+  //           setIsPurchased(false);
+  //         }, 5000);
+  //         // setResponse(data);
+  //       })
+  //       .catch((error) => {
+  //         setIsErrorPurchased(true);
+  //         setErrorMessage(error.message);
+  //         setTimeout(() => {
+  //           setIsErrorPurchased(false);
+  //         }, 5000);
+  //         console.error(error);
+  //       });
+  //   }
+  // };
 
   const handleAdminClick = () => {
     navigate("/admin");

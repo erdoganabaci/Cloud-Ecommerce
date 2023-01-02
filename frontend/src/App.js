@@ -6,36 +6,84 @@ import { AllProductsBarChart } from "./components/AllProductsBarChart";
 import { FilterProductsBarChart } from "./components/FilterProductsBarChart";
 import "./App.css";
 import { Input } from "./components/input";
+import { ajax } from "rxjs/ajax";
+import { map, catchError } from "rxjs/operators";
+
 function App() {
   const [inputValue, setInputValue] = useState("inital-option");
   const [filteredResponseTotalSalesData, setFilteredResponseTotalSalesData] =
     useState([]);
   const [allCat, setAllCat] = useState([]);
 
+  // I use the ajax.getJSON function to make a GET request to the specified URL, and
+  // Pipe is used in RxJS to chain operators together.
+  // Operators are functions that take an Observable as an input and return another Observable.
+  // Pipe allows us to chain multiple operators together, creating a flow of data through the operators.
+  // This is useful because it allows us to easily transform the data as it flows through the Observable stream.
+  // If I wanted to transform the data that is being returned from the fetch request (e.g. by filtering or mapping the data),
+  // I could use the pipe operator to chain the appropriate operator(s) to the Observable.
+
+  // The map operator to transform the response data into the desired format.
+  // The catchError operator is used to handle any errors that may occur during the request.
+
+  // Lastly, I use the subscribe method to subscribe to the observable and update the state with the transformed data.
+
   useEffect(() => {
     if (inputValue !== "inital-option") {
-      fetch(`http://localhost:3001/productCategory/${inputValue}`)
-        .then((res) => res.json())
-        .then((data) => {
-          let productData = {};
-          const totalCount = data[0]["_sum"].totalCount;
-          const category = data[0].category;
-          if (!totalCount) {
-            productData.totalCount = 0;
-            productData.category = category;
-            productData.date = "60 Seconds";
-          } else {
-            productData.totalCount = totalCount;
-            productData.category = category;
-            productData.date = "60 Seconds";
-          }
-          setFilteredResponseTotalSalesData([productData]);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+      const obserable$ = ajax
+        .getJSON(`http://localhost:3001/productCategory/${inputValue}`)
+        .pipe(
+          map((data) => {
+            let productData = {};
+            const totalCount = data[0]["_sum"].totalCount;
+            const category = data[0].category;
+            if (!totalCount) {
+              productData.totalCount = 0;
+              productData.category = category;
+              productData.date = "60 Seconds";
+            } else {
+              productData.totalCount = totalCount;
+              productData.category = category;
+              productData.date = "60 Seconds";
+            }
+            return productData;
+          }),
+          catchError((error) => console.error(error))
+        )
+        .subscribe((productData) =>
+          setFilteredResponseTotalSalesData([productData])
+        );
+      // clean up function when the component unmounts, which will unsubscribe from the observable.
+      return () => {
+        obserable$.unsubscribe();
+      };
     }
   }, [inputValue]);
+
+  // useEffect(() => {
+  //   if (inputValue !== "inital-option") {
+  //     fetch(`http://localhost:3001/productCategory/${inputValue}`)
+  //       .then((res) => res.json())
+  //       .then((data) => {
+  //         let productData = {};
+  //         const totalCount = data[0]["_sum"].totalCount;
+  //         const category = data[0].category;
+  //         if (!totalCount) {
+  //           productData.totalCount = 0;
+  //           productData.category = category;
+  //           productData.date = "60 Seconds";
+  //         } else {
+  //           productData.totalCount = totalCount;
+  //           productData.category = category;
+  //           productData.date = "60 Seconds";
+  //         }
+  //         setFilteredResponseTotalSalesData([productData]);
+  //       })
+  //       .catch((error) => {
+  //         console.error(error);
+  //       });
+  //   }
+  // }, [inputValue]);
 
   return (
     <div className="App">

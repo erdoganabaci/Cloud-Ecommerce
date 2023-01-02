@@ -9,28 +9,56 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { ajax } from "rxjs/ajax";
+import { map, catchError } from "rxjs/operators";
 
 export const AllProductsBarChart = () => {
   const [responseTotalSalesData, setResponseTotalSalesData] = useState();
+
   useEffect(() => {
-    fetch("http://localhost:3001/totalSales")
-      .then((res) => res.json())
-      .then((data) => {
-        let productData = {};
-        const totalCount = data.totalSales["_sum"].totalCount;
-        if (!totalCount) {
-          productData.totalCount = 0;
-          productData.date = "60 Seconds";
-        } else {
-          productData.totalCount = totalCount;
-          productData.date = "60 Seconds";
-        }
-        setResponseTotalSalesData([productData]);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    const obserable$ = ajax
+      .getJSON("http://localhost:3001/totalSales")
+      .pipe(
+        map((res) => {
+          let productData = {};
+          const totalCount = res.totalSales["_sum"].totalCount;
+          if (!totalCount) {
+            productData.totalCount = 0;
+            productData.date = "60 Seconds";
+          } else {
+            productData.totalCount = totalCount;
+            productData.date = "60 Seconds";
+          }
+          return productData;
+        }),
+        catchError((error) => console.error(error))
+      )
+      .subscribe((productData) => setResponseTotalSalesData([productData]));
+    // clean up function when the component unmounts, which will unsubscribe from the observable.
+    return () => {
+      obserable$.unsubscribe();
+    };
   }, []);
+
+  // useEffect(() => {
+  //   fetch("http://localhost:3001/totalSales")
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       let productData = {};
+  //       const totalCount = data.totalSales["_sum"].totalCount;
+  //       if (!totalCount) {
+  //         productData.totalCount = 0;
+  //         productData.date = "60 Seconds";
+  //       } else {
+  //         productData.totalCount = totalCount;
+  //         productData.date = "60 Seconds";
+  //       }
+  //       setResponseTotalSalesData([productData]);
+  //     })
+  //     .catch((error) => {
+  //       console.error(error);
+  //     });
+  // }, []);
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active) {

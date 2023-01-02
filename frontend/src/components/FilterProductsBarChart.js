@@ -9,6 +9,8 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { ajax } from "rxjs/ajax";
+import { map, catchError } from "rxjs/operators";
 
 // const products = [
 //   {
@@ -30,33 +32,68 @@ export const FilterProductsBarChart = (props) => {
 
   useEffect(() => {
     if (props.inputValue === "inital-option" && props.allCat.length > 0) {
-      fetch("http://localhost:3001/totalSales")
-        .then((res) => res.json())
-        .then((data) => {
-          let productData = {};
-          const totalCount = data.totalSales["_sum"].totalCount;
-          if (!totalCount) {
-            productData.totalCount = 0;
-            productData.category =
-              props.allCat.length < 3
-                ? props.allCat.join(",")
-                : props.allCat.slice(0, 2) + " ...";
-            productData.date = "60 Seconds";
-          } else {
-            productData.totalCount = totalCount;
-            productData.category =
-              props.allCat.length < 3
-                ? props.allCat.join(",")
-                : props.allCat.slice(0, 2) + " ...";
-            productData.date = "60 Seconds";
-          }
-          setResponseTotalSalesData([productData]);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+      const obserable$ = ajax
+        .getJSON("http://localhost:3001/totalSales")
+        .pipe(
+          map((res) => {
+            let productData = {};
+            const totalCount = res.totalSales["_sum"].totalCount;
+            if (!totalCount) {
+              productData.totalCount = 0;
+              productData.category =
+                props.allCat.length < 3
+                  ? props.allCat.join(",")
+                  : props.allCat.slice(0, 2) + " ...";
+              productData.date = "60 Seconds";
+            } else {
+              productData.totalCount = totalCount;
+              productData.category =
+                props.allCat.length < 3
+                  ? props.allCat.join(",")
+                  : props.allCat.slice(0, 2) + " ...";
+              productData.date = "60 Seconds";
+            }
+            return productData;
+          }),
+          catchError((error) => console.error(error))
+        )
+        .subscribe((productData) => setResponseTotalSalesData([productData]));
+      // clean up function when the component unmounts, which will unsubscribe from the observable.
+      return () => {
+        obserable$.unsubscribe();
+      };
     }
   }, [props.allCat, props.inputValue]);
+
+  // useEffect(() => {
+  //   if (props.inputValue === "inital-option" && props.allCat.length > 0) {
+  //     fetch("http://localhost:3001/totalSales")
+  //       .then((res) => res.json())
+  //       .then((data) => {
+  //         let productData = {};
+  //         const totalCount = data.totalSales["_sum"].totalCount;
+  //         if (!totalCount) {
+  //           productData.totalCount = 0;
+  //           productData.category =
+  //             props.allCat.length < 3
+  //               ? props.allCat.join(",")
+  //               : props.allCat.slice(0, 2) + " ...";
+  //           productData.date = "60 Seconds";
+  //         } else {
+  //           productData.totalCount = totalCount;
+  //           productData.category =
+  //             props.allCat.length < 3
+  //               ? props.allCat.join(",")
+  //               : props.allCat.slice(0, 2) + " ...";
+  //           productData.date = "60 Seconds";
+  //         }
+  //         setResponseTotalSalesData([productData]);
+  //       })
+  //       .catch((error) => {
+  //         console.error(error);
+  //       });
+  //   }
+  // }, [props.allCat, props.inputValue]);
 
   // const data = products.map((product) => ({
   //   productName: product.name,
