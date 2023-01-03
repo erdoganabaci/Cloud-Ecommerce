@@ -28,16 +28,6 @@ app.post(`/addProduct`, async (req, res) => {
   res.json(results);
 });
 
-// app.post(`/addProduct`, async (req, res) => {
-//   const { name, totalCount } = req.body;
-//   const result = await prisma.product.create({
-//     data: {
-//       name,
-//       totalCount,
-//     },
-//   });
-//   res.json(result);
-// });
 
 app.get("/allProducts", async (req, res) => {
   const products = await prisma.product.findMany({
@@ -50,9 +40,7 @@ app.get("/allProducts", async (req, res) => {
   res.json(products);
 });
 
-// SELECT SUM(quantity) AS total_sales
-// FROM Product
-// WHERE timestamp > NOW() - INTERVAL '60' SECOND;
+
 // get totalSales with in 60 seconds
 app.get("/totalSales", async (req, res) => {
   const totalSales = await prisma.product.aggregate({
@@ -122,48 +110,7 @@ app.get("/productCategory/:category", async (req, res) => {
   res.json(product);
 });
 
-// app.get("/totalSales", async (req, res) => {
-//   const totalSales = await prisma.product.reduce({
-//     select: {
-//       quantity: true,
-//     },
-//     where: {
-//       timestamp: {
-//         gt: new Date(Date.now() - 10 * 1000),
-//       },
-//     },
-//     reduce: (accumulator, product) => accumulator + product.quantity,
-//   });
-//   res.json({ totalSales });
-// });
 
-// app.get('/user/:id/drafts', async (req, res) => {
-//   const { id } = req.params
-
-//   const drafts = await prisma.user
-//     .findUnique({
-//       where: {
-//         id: Number(id),
-//       },
-//     })
-//     .posts({
-//       where: { published: false },
-//     })
-
-//   res.json(drafts)
-// })
-
-// app.get(`/post/:id`, async (req, res) => {
-//   const { id } = req.params
-
-//   const post = await prisma.post.findUnique({
-//     where: { id: Number(id) },
-//   })
-//   res.json(post)
-// })
-
-
-
-const server = app.listen(3001, () =>
-  console.log("🚀 Server ready at: http://localhost:3001")
+const server = app.listen(3005, () =>
+  console.log("🚀 Server ready at: http://localhost:3005")
 );

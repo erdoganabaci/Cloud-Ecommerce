@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
-    "start": "npm run generate && node src/index.js",
+    "start": "npm run generate && npm run migrate:dev && node src/index.js",
     "dev": "nodemon src/index.js",
     "studio": "prisma studio",
     "migrate:init": "prisma migrate dev --name init",
