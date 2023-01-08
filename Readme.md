@@ -40,6 +40,9 @@ env:
     - name: DATABASE_URL
       value: "postgresql://admin:admin@10.106.119.51:5432/postgres?schema=public"
 ```
+### Kubernetes Minikube Dashboard
+
+![K8SDashboard](images/k8s-dashboard.png)
 ### Load Test Backend Pods
 1. We used k6s to load test backend pods. To run k6s first install if you use macos `brew install k6` or [k6s website](https://k6.io/docs/get-started/installation/)
 2. Then run `k6 run k6-load-test.js` script file it will generate **summary.html** file you can basicly access on chrome. 
