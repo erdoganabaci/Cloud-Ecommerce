@@ -1,0 +1,37 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: cloud-frontend-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cloud-frontend-simple
+  template:
+    metadata:
+      labels:
+        app: cloud-frontend-simple
+    spec:
+      containers:
+      - name: cloud-frontend-simple
+        image: cloud-frontend-simple
+        ports:
+        - containerPort: 80
+        imagePullPolicy: Never
+        
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cloud-frontend-service
+  labels:
+    app: cloud-frontend-simple
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    nodePort: 31100
+  selector:
+    app: cloud-frontend-simple

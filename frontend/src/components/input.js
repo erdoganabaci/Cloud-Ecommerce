@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from "react";
-
+import React, { useState, useEffect, useContext } from "react";
+import { UrlContext } from "../App";
 export const Input = (props) => {
   const [selectedValue, setSelectedValue] = useState("inital-option");
   const [optionVal, setOptionVal] = useState([]);
+  const backendUrl = useContext(UrlContext);
 
   useEffect(() => {
-    // get request http://localhost:3001/productCategories
+    // get request http://localhost:3005/productCategories
     // get all categories for displaying in select option
-    fetch("http://localhost:3001/productCategories")
+    fetch(`${backendUrl.url}/productCategories`)
       .then((res) => res.json())
       .then((data) => {
         const catArr = data.map((item) => item.category);

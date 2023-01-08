@@ -48,6 +48,8 @@ spec:
               cpu: "800m"
               memory: "800Mi"
         env:
+          - name: DATABASE_URL
+            value: "postgresql://admin:admin@10.106.119.51:5432/postgres?schema=public"
           - name: PRISMA_CONFIG
             valueFrom:
               configMapKeyRef:
@@ -66,4 +68,4 @@ spec:
   - protocol: TCP
     port: 3005
     targetPort: 3005
-    nodePort: 31000
+    nodePort: 31010

@@ -110,6 +110,10 @@ app.get("/productCategory/:category", async (req, res) => {
   res.json(product);
 });
 
+app.get('/', (req, res) => {
+  res.send('Hello, World!');
+});
+
 
 const server = app.listen(3005, () =>
   console.log("🚀 Server ready at: http://localhost:3005")

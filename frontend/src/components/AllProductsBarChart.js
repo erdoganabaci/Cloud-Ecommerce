@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   BarChart,
   Bar,
@@ -11,13 +11,15 @@ import {
 } from "recharts";
 import { ajax } from "rxjs/ajax";
 import { map, catchError } from "rxjs/operators";
+import { UrlContext } from "../App";
 
 export const AllProductsBarChart = () => {
+  const backendUrl = useContext(UrlContext);
   const [responseTotalSalesData, setResponseTotalSalesData] = useState();
 
   useEffect(() => {
     const obserable$ = ajax
-      .getJSON("http://localhost:3001/totalSales")
+      .getJSON(`${backendUrl.url}/totalSales`)
       .pipe(
         map((res) => {
           let productData = {};
@@ -38,10 +40,10 @@ export const AllProductsBarChart = () => {
     return () => {
       obserable$.unsubscribe();
     };
-  }, []);
+  }, [backendUrl.url]);
 
   // useEffect(() => {
-  //   fetch("http://localhost:3001/totalSales")
+  //   fetch("http://localhost:3005/totalSales")
   //     .then((res) => res.json())
   //     .then((data) => {
   //       let productData = {};

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   BarChart,
   Bar,
@@ -11,6 +11,7 @@ import {
 } from "recharts";
 import { ajax } from "rxjs/ajax";
 import { map, catchError } from "rxjs/operators";
+import { UrlContext } from "../App";
 
 // const products = [
 //   {
@@ -22,6 +23,8 @@ import { map, catchError } from "rxjs/operators";
 // ];
 
 export const FilterProductsBarChart = (props) => {
+  const backendUrl = useContext(UrlContext);
+
   const [responseTotalSalesData, setResponseTotalSalesData] = useState();
 
   useEffect(() => {
@@ -33,7 +36,7 @@ export const FilterProductsBarChart = (props) => {
   useEffect(() => {
     if (props.inputValue === "inital-option" && props.allCat.length > 0) {
       const obserable$ = ajax
-        .getJSON("http://localhost:3001/totalSales")
+        .getJSON(`${backendUrl.url}/totalSales`)
         .pipe(
           map((res) => {
             let productData = {};
@@ -63,11 +66,11 @@ export const FilterProductsBarChart = (props) => {
         obserable$.unsubscribe();
       };
     }
-  }, [props.allCat, props.inputValue]);
+  }, [backendUrl.url, props.allCat, props.inputValue]);
 
   // useEffect(() => {
   //   if (props.inputValue === "inital-option" && props.allCat.length > 0) {
-  //     fetch("http://localhost:3001/totalSales")
+  //     fetch("http://localhost:3005/totalSales")
   //       .then((res) => res.json())
   //       .then((data) => {
   //         let productData = {};

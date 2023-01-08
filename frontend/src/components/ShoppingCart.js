@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { of } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import { map, catchError } from "rxjs/operators";
+import { UrlContext } from "../App";
 
 export function ShoppingCart() {
+  const backendUrl = useContext(UrlContext);
+
   // Declare state variables for the products in the cart and the quantity and price of each product
   const [cart, setCart] = useState([]);
   const [quantity, setQuantity] = useState({});
@@ -75,7 +78,7 @@ export function ShoppingCart() {
       }
       // HTTP POST request to the server
       const purchaseObservable$ = ajax({
-        url: "http://localhost:3001/addProduct",
+        url: `${backendUrl.url}/addProduct`,
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -122,7 +125,7 @@ export function ShoppingCart() {
   //         totalCount: value,
   //       });
   //     }
-  //     fetch("http://localhost:3001/addProduct", {
+  //     fetch("http://localhost:3005/addProduct", {
   //       method: "POST",
   //       headers: {
   //         "Content-Type": "application/json",

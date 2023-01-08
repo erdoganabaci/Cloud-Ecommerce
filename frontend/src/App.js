@@ -1,5 +1,5 @@
 // import logo from './logo.svg';
-import { useState, useEffect } from "react";
+import { useState, useEffect, createContext } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ShoppingCart } from "./components/ShoppingCart";
 import { AllProductsBarChart } from "./components/AllProductsBarChart";
@@ -9,7 +9,11 @@ import { Input } from "./components/input";
 import { ajax } from "rxjs/ajax";
 import { map, catchError } from "rxjs/operators";
 
+export const UrlContext = createContext();
+
 function App() {
+  // const backendUrl = "http://localhost:3005";
+  const backendUrl = "http://localhost:3005";
   const [inputValue, setInputValue] = useState("inital-option");
   const [filteredResponseTotalSalesData, setFilteredResponseTotalSalesData] =
     useState([]);
@@ -31,7 +35,7 @@ function App() {
   useEffect(() => {
     if (inputValue !== "inital-option") {
       const obserable$ = ajax
-        .getJSON(`http://localhost:3001/productCategory/${inputValue}`)
+        .getJSON(`${backendUrl}/productCategory/${inputValue}`)
         .pipe(
           map((data) => {
             let productData = {};
@@ -62,7 +66,7 @@ function App() {
 
   // useEffect(() => {
   //   if (inputValue !== "inital-option") {
-  //     fetch(`http://localhost:3001/productCategory/${inputValue}`)
+  //     fetch(`http://localhost:3005/productCategory/${inputValue}`)
   //       .then((res) => res.json())
   //       .then((data) => {
   //         let productData = {};
@@ -86,40 +90,41 @@ function App() {
   // }, [inputValue]);
 
   return (
-    <div className="App">
-      <Router>
-        <Routes>
-          <Route path="/" element={<ShoppingCart />} />
-          <Route
-            path="/admin"
-            element={
-              <div className="App-header">
-                <div className="headerAdmin">
-                  <a href="/">Crystal Outfit Manager Monitor</a>
+    <UrlContext.Provider value={{ url: backendUrl }}>
+      <div className="App">
+        <Router>
+          <Routes>
+            <Route path="/" element={<ShoppingCart />} />
+            <Route
+              path="/admin"
+              element={
+                <div className="App-header">
+                  <div className="headerAdmin">
+                    <a href="/">Crystal Outfit Manager Monitor</a>
+                  </div>
+
+                  <h4>All product with in 60 sec</h4>
+
+                  <AllProductsBarChart />
+                  <h4>Filter by category with in 60 sec</h4>
+                  <Input
+                    setAllCat={setAllCat}
+                    setInputValue={setInputValue}
+                  ></Input>
+
+                  <FilterProductsBarChart
+                    filteredResponseTotalSalesData={
+                      filteredResponseTotalSalesData
+                    }
+                    inputValue={inputValue}
+                    allCat={allCat}
+                  />
                 </div>
-
-                <h4>All product with in 60 sec</h4>
-
-                <AllProductsBarChart />
-                <h4>Filter by category with in 60 sec</h4>
-                <Input
-                  setAllCat={setAllCat}
-                  setInputValue={setInputValue}
-                ></Input>
-
-                <FilterProductsBarChart
-                  filteredResponseTotalSalesData={
-                    filteredResponseTotalSalesData
-                  }
-                  inputValue={inputValue}
-                  allCat={allCat}
-                />
-              </div>
-            }
-          />
-        </Routes>
-      </Router>
-      {/* <header className="App-header">
+              }
+            />
+          </Routes>
+        </Router>
+        {/* <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
           Edit <code>src/App.js</code> and save to reload.
@@ -133,7 +138,8 @@ function App() {
           Learn React
         </a>
       </header> */}
-    </div>
+      </div>
+    </UrlContext.Provider>
   );
 }
 
